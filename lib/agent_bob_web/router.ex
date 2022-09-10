@@ -7,6 +7,8 @@ defmodule AgentBobWeb.Router do
 
   scope "/api", AgentBobWeb do
     pipe_through :api
+
+    get "/fb_webhook", ChatBotController, :verify_webhook_token
   end
 
   # Enables LiveDashboard only for development

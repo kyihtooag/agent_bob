@@ -8,8 +8,7 @@ config :agent_bob, AgentBobWeb.Endpoint,
   server: false
 
 # In test we don't send emails.
-config :agent_bob, AgentBob.Mailer,
-  adapter: Swoosh.Adapters.Test
+config :agent_bob, AgentBob.Mailer, adapter: Swoosh.Adapters.Test
 
 # Print only warnings and errors during test
 config :logger, level: :warn

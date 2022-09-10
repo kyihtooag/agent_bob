@@ -23,6 +23,15 @@ config :agent_bob, AgentBobWeb.Endpoint,
 # at the `config/runtime.exs`.
 config :agent_bob, AgentBob.Mailer, adapter: Swoosh.Adapters.Local
 
+config :agent_bob,
+  chat_bot: %{
+    message_url: "me/messages",
+    api_version: "v13.0",
+    base_url: "https://graph.facebook.com",
+    page_access_token: System.fetch_env!("FACEBOOK_PAGE_ACCESS_TOKEN"),
+    webhook_verify_token: System.fetch_env!("FACEBOOK_WEBHOOK_VERIFY_TOKEN")
+  }
+
 # Swoosh API client is needed for adapters other than SMTP.
 config :swoosh, :api_client, false
 
