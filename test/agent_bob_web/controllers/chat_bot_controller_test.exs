@@ -1,9 +1,11 @@
 defmodule AgentBobWeb.ChatBotControllerTest do
   use AgentBobWeb.ConnCase
 
-  describe "verify_webhook/1" do
-    @webhook_api "/api/fb_webhook"
+  import AgentBob.EventDataFixtures
 
+  @webhook_api "/api/fb_webhook"
+
+  describe "verify_webhook/1" do
     test "returns challenge int to facebook if both webhook mode and token are matched ", %{
       conn: conn
     } do
@@ -36,6 +38,19 @@ defmodule AgentBobWeb.ChatBotControllerTest do
         |> json_response(403)
 
       assert response == %{"message" => "unauthorized", "status" => "error"}
+    end
+  end
+
+  describe "handle_events" do
+    test "handle chat bot events and returns 200", %{conn: conn} do
+      params = event_data()
+
+      response =
+        conn
+        |> post(@webhook_api, params)
+        |> json_response(200)
+
+      assert response == %{"status" => "ok"}
     end
   end
 end

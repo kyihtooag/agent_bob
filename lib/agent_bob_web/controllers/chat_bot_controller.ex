@@ -18,4 +18,12 @@ defmodule AgentBobWeb.ChatBotController do
       |> resp(403, Jason.encode!(%{status: "error", message: "unauthorized"}))
     end
   end
+
+  def handle_events(conn, event_data) do
+    Bot.handle_events(event_data)
+
+    conn
+    |> put_resp_content_type("application/json")
+    |> resp(200, Jason.encode!(%{status: "ok"}))
+  end
 end
