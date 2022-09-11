@@ -5,8 +5,6 @@ defmodule AgentBobWeb.ChatBotController do
 
   @spec verify_webhook_token(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def verify_webhook_token(conn, params) do
-    verified? = Bot.verify_webhook(params)
-
     with true <- Bot.verify_webhook(params),
          :ok <- Bot.setup_bot() do
       conn

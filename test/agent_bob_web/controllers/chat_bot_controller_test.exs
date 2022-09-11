@@ -3,6 +3,10 @@ defmodule AgentBobWeb.ChatBotControllerTest do
 
   import AgentBob.EventDataFixtures
 
+  import Mox
+
+  setup :verify_on_exit!
+
   @webhook_api "/api/fb_webhook"
 
   describe "verify_webhook/1" do
@@ -16,6 +20,10 @@ defmodule AgentBobWeb.ChatBotControllerTest do
         "hub.mode" => "subscribe",
         "hub.verify_token" => "agent_bob"
       }
+
+      AgentBob.BotMock
+      |> expect(:verify_webhook, fn _ -> true end)
+      |> expect(:setup_bot, fn -> :ok end)
 
       response =
         conn
@@ -32,6 +40,9 @@ defmodule AgentBobWeb.ChatBotControllerTest do
         "hub.verify_token" => "invalid"
       }
 
+      AgentBob.BotMock
+      |> expect(:verify_webhook, fn _ -> false end)
+
       response =
         conn
         |> get(@webhook_api, params)
@@ -44,6 +55,9 @@ defmodule AgentBobWeb.ChatBotControllerTest do
   describe "handle_events" do
     test "handle chat bot events and returns 200", %{conn: conn} do
       params = event_data()
+
+      AgentBob.BotMock
+      |> expect(:handle_events, fn _ -> :ok end)
 
       response =
         conn
