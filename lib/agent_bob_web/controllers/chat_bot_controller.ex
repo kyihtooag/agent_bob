@@ -8,6 +8,8 @@ defmodule AgentBobWeb.ChatBotController do
     verified? = Bot.verify_webhook(params)
 
     if verified? do
+      Bot.setup_bot()
+
       conn
       |> put_resp_content_type("application/json")
       |> resp(200, params["hub.challenge"])

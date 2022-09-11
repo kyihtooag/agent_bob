@@ -1,5 +1,6 @@
 defmodule AgentBob.Bot.Message.Handler do
   alias AgentBob.Bot
+  alias AgentBob.Coingecko
   alias AgentBob.Bot.Message
   alias AgentBob.Bot.Message.Template
 
@@ -22,5 +23,33 @@ defmodule AgentBob.Bot.Message.Handler do
 
     msg_template = Template.text(event, message)
     Bot.send_message(msg_template)
+  end
+
+  def handle_postback(%{"payload" => "by_id"}, event) do
+    replies =
+      Coingecko.list_coin()
+      |> Enum.map(fn coin ->
+        {:text, coin["id"], coin["id"]}
+      end)
+
+    template_title = "Which coin do you like to search?"
+
+    event
+    |> Template.quick_reply(template_title, replies)
+    |> Bot.send_message()
+  end
+
+  def handle_postback(%{"payload" => "by_name"}, event) do
+    replies =
+      Coingecko.list_coin()
+      |> Enum.map(fn coin ->
+        {:text, coin["name"], coin["id"]}
+      end)
+
+    template_title = "Which coin do you like to search?"
+
+    event
+    |> Template.quick_reply(template_title, replies)
+    |> Bot.send_message()
   end
 end

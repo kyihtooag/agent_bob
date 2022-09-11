@@ -26,10 +26,15 @@ config :agent_bob, AgentBob.Mailer, adapter: Swoosh.Adapters.Local
 config :agent_bob,
   chat_bot: %{
     message_url: "me/messages",
+    messenger_profile_url: "me/messenger_profile",
     api_version: "v13.0",
     base_url: "https://graph.facebook.com",
     page_access_token: System.fetch_env!("FACEBOOK_PAGE_ACCESS_TOKEN"),
     webhook_verify_token: System.fetch_env!("FACEBOOK_WEBHOOK_VERIFY_TOKEN")
+  },
+  coingecko: %{
+    base_url: "https://api.coingecko.com/api/v3",
+    list_url: "/coins/list"
   }
 
 # Swoosh API client is needed for adapters other than SMTP.
