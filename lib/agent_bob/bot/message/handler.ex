@@ -12,6 +12,19 @@ defmodule AgentBob.Bot.Message.Handler do
     Bot.send_message(resp_template)
   end
 
+  def handle_message(%{"quick_reply" => %{"payload" => coin_id}}, event) do
+    coin_id
+    |> Coingecko.list_market_prices()
+    |> Enum.map(fn [date, price] ->
+      message = """
+        At #{date}, the value of 1 #{coin_id} is: $#{price} USD.
+      """
+
+      msg_template = Template.text(event, message)
+      Bot.send_message(msg_template)
+    end)
+  end
+
   def handle_message(_message, event) do
     greetings = Message.greet()
 

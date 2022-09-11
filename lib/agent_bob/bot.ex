@@ -7,8 +7,6 @@ defmodule AgentBob.Bot do
   alias AgentBob.Bot.{Config, Message}
   alias AgentBob.Bot.Message.{Handler, Template}
 
-  @bot_config Config.config()
-
   # Verifies the request params of faceboo, webhook mode and token.
   # If both of them are matche, returns true. If not, returns false.
   @spec verify_webhook(map()) :: boolean
@@ -35,13 +33,34 @@ defmodule AgentBob.Bot do
     end
   end
 
+  @spec send_message(map()) :: :ok | :error
+  def send_message(msg_template) do
+    message_url = Config.message_url()
+    Logger.info(message_url)
+    headers = [{"content-type", "application/json"}]
+    msg_template = Jason.encode!(msg_template)
+
+    case HTTPoison.post(message_url, msg_template, headers) do
+      {:ok, _response} ->
+        Logger.info("Message Sent to Bot")
+        :ok
+
+      {:error, reason} ->
+        Logger.error("Error in sending message to bot, #{inspect(reason)}")
+        :error
+    end
+  end
+
   def setup_bot() do
-    messenger_profile_url = messenger_profile_url()
+    messenger_profile_url = Config.messenger_profile_url()
     Logger.info(messenger_profile_url)
     headers = [{"content-type", "application/json"}]
 
     body =
       %{
+        "get_started" => %{
+          "payload" => "Hi, I'm a bot"
+        },
         "greeting" => [
           %{
             "locale" => "default",
@@ -64,6 +83,24 @@ defmodule AgentBob.Bot do
             ],
             "locale" => "default"
           }
+        ],
+        "persistent_menu" => [
+          %{
+            "locale" => "default",
+            "composer_input_disabled" => false,
+            "call_to_actions" => [
+              %{
+                "type" => "postback",
+                "title" => "Search coin by ID",
+                "payload" => "by_id"
+              },
+              %{
+                "type" => "postback",
+                "title" => "Search coin by name",
+                "payload" => "by_name"
+              }
+            ]
+          }
         ]
       }
       |> Jason.encode!()
@@ -77,41 +114,5 @@ defmodule AgentBob.Bot do
         Logger.error("Error in setting up messenger profile, #{inspect(reason)}")
         :error
     end
-  end
-
-  @spec send_message(map()) :: :ok | :error
-  def send_message(msg_template) do
-    message_url = message_url()
-    Logger.info(message_url)
-    headers = [{"content-type", "application/json"}]
-    msg_template = Jason.encode!(msg_template)
-
-    case HTTPoison.post(message_url, msg_template, headers) do
-      {:ok, _response} ->
-        Logger.info("Message Sent to Bot")
-        :ok
-
-      {:error, reason} ->
-        Logger.error("Error in sending message to bot, #{inspect(reason)}")
-        :error
-    end
-  end
-
-  defp message_url() do
-    page_token = @bot_config.page_access_token
-    message_url = @bot_config.message_url
-    base_url = @bot_config.base_url
-    version = @bot_config.api_version
-    token_path = "?access_token=#{page_token}"
-    Path.join([base_url, version, message_url, token_path])
-  end
-
-  defp messenger_profile_url() do
-    page_token = @bot_config.page_access_token
-    messenger_profile_url = @bot_config.messenger_profile_url
-    base_url = @bot_config.base_url
-    version = @bot_config.api_version
-    token_path = "?access_token=#{page_token}"
-    Path.join([base_url, version, messenger_profile_url, token_path])
   end
 end
