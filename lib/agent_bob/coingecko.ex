@@ -6,6 +6,22 @@ defmodule AgentBob.Coingecko do
   @config Application.get_env(:agent_bob, :coingecko)
   @headers [{"content-type", "application/json"}]
 
+  def get_coin(coin_id) do
+    request_params =
+      "/coins/#{coin_id}?sparkline=false&tickers=false&market_data=false&community_data=false&localization=false&developer_data=false"
+
+    request_url = Path.join(@config.base_url, request_params)
+
+    with {:ok, %{body: body}} <- HTTPoison.get(request_url, @headers),
+         {:ok, coins_detail} <- Jason.decode(body) do
+      coins_detail
+    else
+      {:error, _} ->
+        Logger.error("Error in requesting coin list from coingecko.")
+        :error
+    end
+  end
+
   def list_coin do
     request_url = Path.join(@config.base_url, @config.list_url)
 

@@ -7,17 +7,17 @@ defmodule AgentBobWeb.ChatBotController do
   def verify_webhook_token(conn, params) do
     verified? = Bot.verify_webhook(params)
 
-    if verified? do
-      Bot.setup_bot()
-
+    with true <- Bot.verify_webhook(params),
+         :ok <- Bot.setup_bot() do
       conn
       |> put_resp_content_type("application/json")
       |> resp(200, params["hub.challenge"])
       |> send_resp()
     else
-      conn
-      |> put_resp_content_type("application/json")
-      |> resp(403, Jason.encode!(%{status: "error", message: "unauthorized"}))
+      _ ->
+        conn
+        |> put_resp_content_type("application/json")
+        |> resp(403, Jason.encode!(%{status: "error", message: "unauthorized"}))
     end
   end
 

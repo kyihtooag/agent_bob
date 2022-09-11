@@ -33,7 +33,7 @@ defmodule AgentBob.Bot.Message do
   def greet() do
     """
     Hello buddy :)
-    Welcome to TOMATO
+    Welcome to BoB
     """
   end
 end
