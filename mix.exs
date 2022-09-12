@@ -44,7 +44,8 @@ defmodule AgentBob.MixProject do
       {:plug_cowboy, "~> 2.5"},
       {:httpoison, "~> 1.8"},
       {:mox, "~> 1.0", only: :test},
-      {:decimal, "~> 2.0"}
+      {:decimal, "~> 2.0"},
+      {:stream_data, "~> 0.5", only: :test}
     ]
   end
 

@@ -15,7 +15,7 @@ defmodule AgentBob.CoingeckoImpl do
 
     with {:ok, %{body: body}} <- HTTPoison.get(request_url, @headers),
          {:ok, coins_detail} <- Jason.decode(body) do
-      coins_detail
+      {:ok, coins_detail}
     else
       {:error, _} ->
         Logger.error("Error in requesting coin list from coingecko.")
@@ -29,7 +29,7 @@ defmodule AgentBob.CoingeckoImpl do
 
     with {:ok, %{body: body}} <- HTTPoison.get(request_url, @headers),
          {:ok, coins_list} <- Jason.decode(body) do
-      Enum.take_random(coins_list, 5)
+      {:ok, Enum.take_random(coins_list, 5)}
     else
       {:error, _} ->
         Logger.error("Error in requesting coin list from coingecko.")
@@ -44,15 +44,18 @@ defmodule AgentBob.CoingeckoImpl do
 
     with {:ok, %{body: body}} <- HTTPoison.get(request_url, @headers),
          {:ok, response} <- Jason.decode(body) do
-      response["prices"]
-      |> Enum.map(fn [timestamp, price] ->
-        [
-          timestamp |> DateTime.from_unix!(:millisecond) |> DateTime.to_date(),
-          price |> Decimal.from_float() |> Decimal.round(6)
-        ]
-      end)
-      # by requestiing the market chart data of the coin using daily interval will give two market price of the current day, openning price and current price. So, we will neglect the current price.
-      |> List.delete_at(-1)
+      prices_list =
+        response["prices"]
+        |> Enum.map(fn [timestamp, price] ->
+          [
+            timestamp |> DateTime.from_unix!(:millisecond) |> DateTime.to_date(),
+            price |> Decimal.from_float() |> Decimal.round(6)
+          ]
+        end)
+        # by requestiing the market chart data of the coin using daily interval will give two market price of the current day, openning price and current price. So, we will neglect the current price.
+        |> List.delete_at(-1)
+
+      {:ok, prices_list}
     else
       {:error, _} ->
         Logger.error("Error in requesting coin list from coingecko.")

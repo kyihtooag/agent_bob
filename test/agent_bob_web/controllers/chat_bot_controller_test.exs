@@ -58,7 +58,7 @@ defmodule AgentBobWeb.ChatBotControllerTest do
 
       response =
         conn
-        |> post(@webhook_api, event_data())
+        |> post(@webhook_api, build_text_message("Hi"))
         |> json_response(200)
 
       assert response == %{"status" => "ok"}

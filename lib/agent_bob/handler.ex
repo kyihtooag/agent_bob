@@ -1,4 +1,6 @@
 defmodule AgentBob.Handler do
+  require Logger
+
   alias AgentBob.Bot
   alias AgentBob.Coingecko
   alias AgentBob.Bot.MessageTemplate
@@ -17,8 +19,8 @@ defmodule AgentBob.Handler do
   end
 
   defp handle_message(%{"quick_reply" => %{"payload" => coin_id}}, event) do
-    with coin <- Coingecko.get_coin(coin_id),
-         prices_list <- Coingecko.list_market_prices(coin["id"]) do
+    with {:ok, coin} <- Coingecko.get_coin(coin_id),
+         {:ok, prices_list} <- Coingecko.list_market_prices(coin["id"]) do
       prices_list
       |> Enum.map(fn [date, price] ->
         message = """
@@ -51,34 +53,47 @@ defmodule AgentBob.Handler do
   end
 
   defp handle_postback(%{"payload" => "by_id"}, event) do
-    replies =
-      Coingecko.list_coin()
-      |> Enum.map(fn coin ->
-        {:text, coin["id"], coin["id"]}
-      end)
+    case Coingecko.list_coin() do
+      {:ok, prices_list} ->
+        replies =
+          prices_list
+          |> Enum.map(fn coin ->
+            {:text, coin["id"], coin["id"]}
+          end)
 
-    template_title = "Which coin do you like to search?"
+        template_title = "Which coin do you like to search?"
 
-    event
-    |> MessageTemplate.quick_reply(template_title, replies)
+        event
+        |> MessageTemplate.quick_reply(template_title, replies)
+
+      :error ->
+        MessageTemplate.text(event, "Something went wrong. Our Engineers are working on it.")
+    end
   end
 
   defp handle_postback(%{"payload" => "by_name"}, event) do
-    replies =
-      Coingecko.list_coin()
-      |> Enum.map(fn coin ->
-        {:text, coin["name"], coin["id"]}
-      end)
+    case Coingecko.list_coin() do
+      {:ok, prices_list} ->
+        replies =
+          prices_list
+          |> Enum.map(fn coin ->
+            {:text, coin["name"], coin["id"]}
+          end)
 
-    template_title = "Which coin do you like to search?"
+        template_title = "Which coin do you like to search?"
 
-    event
-    |> MessageTemplate.quick_reply(template_title, replies)
+        event
+        |> MessageTemplate.quick_reply(template_title, replies)
+
+      :error ->
+        MessageTemplate.text(event, "Something went wrong. Our Engineers are working on it.")
+    end
   end
 
   defp greeting_message(event) do
     message = """
-    Unknown Instruction Received
+    Hello!I'm BoB.
+    Say 'Hi BoB' or select in the menu if you want to search.
     """
 
     MessageTemplate.text(event, message)
@@ -86,7 +101,7 @@ defmodule AgentBob.Handler do
 
   defp intruction_message(event) do
     message = """
-      That's all. If you want to search the other coin, feels free to say 'Hi BoB' or you can select in the menu.
+    That's all. If you want to search the other coin, feels free to say 'Hi BoB' or you can select in the menu.
     """
 
     MessageTemplate.text(event, message)

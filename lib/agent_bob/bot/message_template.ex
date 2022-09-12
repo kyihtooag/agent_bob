@@ -3,15 +3,15 @@ defmodule AgentBob.Bot.MessageTemplate do
   Prepares the messages template for reply messages
   """
 
-  def get_sender(event) do
-    messaging = get_messaging(event)
-    messaging["sender"]
-  end
-
-  def get_messaging(event) do
+  def get_messaging(event) when is_map(event) do
     [entry | _any] = event["entry"]
     [messaging | _any] = entry["messaging"]
     messaging
+  end
+
+  def get_sender(event) do
+    messaging = get_messaging(event)
+    messaging["sender"]
   end
 
   def quick_reply(event, template_title, replies) do

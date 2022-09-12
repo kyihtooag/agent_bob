@@ -1,24 +1,67 @@
 defmodule AgentBob.EventDataFixtures do
-  # It will be replace with Mock tests
-  def event_data() do
+  def build_text_message(message) do
+    recipient_id = gen_id()
+    sender_id = gen_id()
+
+    %{
+      "message" => %{
+        "text" => message
+      },
+      "recipient" => %{"id" => "#{recipient_id}"},
+      "sender" => %{"id" => "#{sender_id}"},
+      "timestamp" => now_timestamp()
+    }
+    |> do_build_event_data(recipient_id)
+  end
+
+  def build_quick_reply_message(coin) do
+    recipient_id = gen_id()
+    sender_id = gen_id()
+
+    %{
+      "message" => %{
+        "quick_reply" => %{"payload" => coin},
+        "text" => coin
+      },
+      "recipient" => %{"id" => "#{recipient_id}"},
+      "sender" => %{"id" => "#{sender_id}"},
+      "timestamp" => now_timestamp()
+    }
+    |> do_build_event_data(recipient_id)
+  end
+
+  def build_postback_message(%{"payload" => payload, "title" => title}) do
+    recipient_id = gen_id()
+    sender_id = gen_id()
+
+    %{
+      "postback" => %{
+        "payload" => payload,
+        "title" => title
+      },
+      "recipient" => %{"id" => "#{recipient_id}"},
+      "sender" => %{"id" => "#{sender_id}"},
+      "timestamp" => now_timestamp()
+    }
+    |> do_build_event_data(recipient_id)
+  end
+
+  defp do_build_event_data(message, recipient_id) do
     %{
       "entry" => [
         %{
-          "id" => "105039412352938",
+          "id" => "#{recipient_id}",
           "messaging" => [
-            %{
-              "message" => %{
-                "text" => "hi"
-              },
-              "recipient" => %{"id" => "105039412352938"},
-              "sender" => %{"id" => "5341236229326509"},
-              "timestamp" => 1_662_828_989_241
-            }
+            message
           ],
-          "time" => 1_662_828_989_604
+          "time" => now_timestamp()
         }
       ],
       "object" => "page"
     }
   end
+
+  defp now_timestamp(), do: DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+
+  defp gen_id(), do: Enum.random(1_000_000_000..9_999_999_999)
 end
