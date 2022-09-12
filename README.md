@@ -29,7 +29,7 @@ Agent Bob uses the Facebook messenger chatbot as a middleware to communicate wit
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
   
 ### Setup Webhook
-Bob uses webhook to interacting with facebook chatbot. We have to add our webhook endpoint URL with is [`http://localhost:4000/api/fb_webhook`](http://localhost:4000/api/fb_webhook) to the facebook APP. But the facebook app only allowd a secure callback URL (https). For this case, here I use [`Ngrok`](https://ngrok.com/) to get secure URL. 
+Bob uses webhook to interacting with facebook chatbot. We have to add our webhook endpoint URL which is [`http://localhost:4000/api/fb_webhook`](http://localhost:4000/api/fb_webhook) to the facebook APP. But the facebook only allowd a secure callback URL (https) for webhook. For this case, here I use [`Ngrok`](https://ngrok.com/) to get secure URL. 
   
   * Run `ngrok http 4000` and get the secure URL for base endpoint.
   * Add the webhook callback URL, `<ngrok_generated_URl>/api/fb_webhook` and the verify token that we generated earlier.
