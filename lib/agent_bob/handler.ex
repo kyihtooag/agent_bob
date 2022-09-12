@@ -1,5 +1,7 @@
 defmodule AgentBob.Handler do
-  require Logger
+  @moduledoc """
+  The context module for handling all the events received from Facebook ChatBot.
+  """
 
   alias AgentBob.Bot
   alias AgentBob.Coingecko

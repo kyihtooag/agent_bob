@@ -1,4 +1,8 @@
 defmodule AgentBob.CoingeckoImpl do
+  @moduledoc """
+  The implementation for the Coingecko Client.
+  """
+
   require Logger
 
   @behaviour AgentBob.Coingecko.Behavior

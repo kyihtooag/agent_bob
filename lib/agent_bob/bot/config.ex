@@ -1,4 +1,8 @@
 defmodule AgentBob.Bot.Config do
+  @moduledoc """
+  The context module of configuration related to Facebook ChatBot Client.
+  """
+
   def page_access_token do
     Map.get(config(), :page_access_token)
   end

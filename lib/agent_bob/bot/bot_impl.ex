@@ -1,10 +1,11 @@
 defmodule AgentBob.BotImpl do
   @moduledoc """
-  The implementation for the chat bot behaviors.
+  The implementation for the Facebook Chatbot Client.
   """
-  @behaviour AgentBob.Bot.Behavior
 
   require Logger
+
+  @behaviour AgentBob.Bot.Behavior
 
   alias AgentBob.Bot.{Config, MessageTemplate}
 
