@@ -4,7 +4,7 @@ defmodule AgentBob.Coingecko do
   end
 
   def list_coin() do
-    coingecko_impl().list_coin
+    coingecko_impl().list_coin()
   end
 
   def list_market_prices(coin_id) do

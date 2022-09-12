@@ -8,8 +8,6 @@ defmodule AgentBob.EventDataFixtures do
           "messaging" => [
             %{
               "message" => %{
-                "mid" =>
-                  "m_EV9E8tBy8MZG82HGvwSYyLmf0AizXOVqK4Ib3WFqhMBJpP2OraWM6AL8R75k_GrGVeRnFNsTSk4tD5r94TPb-w",
                 "text" => "hi"
               },
               "recipient" => %{"id" => "105039412352938"},

@@ -2,6 +2,7 @@ defmodule AgentBobWeb.ChatBotController do
   use AgentBobWeb, :controller
 
   alias AgentBob.Bot
+  alias AgentBob.Handler
 
   @spec verify_webhook_token(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def verify_webhook_token(conn, params) do
@@ -20,7 +21,9 @@ defmodule AgentBobWeb.ChatBotController do
   end
 
   def handle_events(conn, event_data) do
-    Bot.handle_events(event_data)
+    event_data
+    |> Handler.handle_events()
+    |> Bot.send_message()
 
     conn
     |> put_resp_content_type("application/json")

@@ -3,7 +3,7 @@ defmodule AgentBob.CoingeckoImpl do
 
   @behaviour AgentBob.Coingecko.Behavior
 
-  @config Application.get_env(:agent_bob, :coingecko)
+  @config Application.get_env(:agent_bob, :coingecko_api)
   @headers [{"content-type", "application/json"}]
 
   @impl true

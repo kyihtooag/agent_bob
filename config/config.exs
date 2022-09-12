@@ -32,7 +32,7 @@ config :agent_bob,
     page_access_token: System.fetch_env!("FACEBOOK_PAGE_ACCESS_TOKEN"),
     webhook_verify_token: System.fetch_env!("FACEBOOK_WEBHOOK_VERIFY_TOKEN")
   },
-  coingecko: %{
+  coingecko_api: %{
     base_url: "https://api.coingecko.com/api/v3",
     list_url: "/coins/list"
   }

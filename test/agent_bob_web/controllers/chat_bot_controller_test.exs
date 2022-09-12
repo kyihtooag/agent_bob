@@ -1,6 +1,7 @@
 defmodule AgentBobWeb.ChatBotControllerTest do
   use AgentBobWeb.ConnCase
 
+  import AgentBob.EventDataFixtures
   import Mox
 
   setup :verify_on_exit!
@@ -53,11 +54,11 @@ defmodule AgentBobWeb.ChatBotControllerTest do
   describe "handle_events" do
     test "handle chat bot events and returns 200", %{conn: conn} do
       AgentBob.BotMock
-      |> expect(:handle_events, fn _ -> :ok end)
+      |> expect(:send_message, fn _ -> :ok end)
 
       response =
         conn
-        |> post(@webhook_api, %{})
+        |> post(@webhook_api, event_data())
         |> json_response(200)
 
       assert response == %{"status" => "ok"}

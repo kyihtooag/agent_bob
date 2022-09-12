@@ -6,8 +6,7 @@ defmodule AgentBob.BotImpl do
 
   require Logger
 
-  alias AgentBob.Bot.{Config, Message}
-  alias AgentBob.Bot.Message.{Handler, Template}
+  alias AgentBob.Bot.{Config, MessageTemplate}
 
   # Verifies the request params of faceboo, webhook mode and token.
   # If both of them are matche, returns true. If not, returns false.
@@ -19,23 +18,30 @@ defmodule AgentBob.BotImpl do
     mode == "subscribe" && token == Config.webhook_verify_token()
   end
 
-  def handle_events(event) do
-    case Message.get_messaging(event) do
-      %{"message" => message} ->
-        Handler.handle_message(message, event)
+  @impl true
+  def get_profile(event) do
+    sender = MessageTemplate.get_sender(event)
+    bot_config = Config.config()
+    page_token = bot_config.page_access_token
+    base_url = bot_config.base_url
+    version = bot_config.api_version
+    token_path = "?access_token=#{page_token}"
+    profile_path = Path.join([base_url, version, sender["id"], token_path])
 
-      %{"postback" => postback} ->
-        Handler.handle_postback(postback, event)
+    case HTTPoison.get(profile_path) do
+      {:ok, response} ->
+        {:ok, Jason.decode!(response.body)}
 
-      _ ->
-        error_template =
-          Template.text(event, "Something went wrong. Our Engineers are working on it.")
-
-        send_message(error_template)
+      {:error, _error} ->
+        {:enoprofile, :error}
     end
   end
 
-  @spec send_message(map()) :: :ok | :error
+  @impl true
+  def send_message(msg_template) when is_list(msg_template),
+    do: Enum.each(msg_template, &send_message(&1))
+
+  @impl true
   def send_message(msg_template) do
     message_url = Config.message_url()
     Logger.info(message_url)

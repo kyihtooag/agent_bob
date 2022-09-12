@@ -1,9 +1,18 @@
-defmodule AgentBob.Bot.Message.Template do
+defmodule AgentBob.Bot.MessageTemplate do
   @moduledoc """
   Prepares the messages template for reply messages
   """
 
-  alias AgentBob.Bot.Message
+  def get_sender(event) do
+    messaging = get_messaging(event)
+    messaging["sender"]
+  end
+
+  def get_messaging(event) do
+    [entry | _any] = event["entry"]
+    [messaging | _any] = entry["messaging"]
+    messaging
+  end
 
   def quick_reply(event, template_title, replies) do
     replies = Enum.map(replies, &prepare_replies/1)
@@ -75,7 +84,7 @@ defmodule AgentBob.Bot.Message.Template do
   end
 
   defp recipient(event) do
-    %{"id" => Message.get_sender(event)["id"]}
+    %{"id" => get_sender(event)["id"]}
   end
 
   def text(event, text) do
